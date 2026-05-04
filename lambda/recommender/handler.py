@@ -135,7 +135,7 @@ Reference actual metric values in your descriptions."""
         },
     )
 
-    with urllib.request.urlopen(req, timeout=25) as resp:
+    with urllib.request.urlopen(req, timeout=80) as resp:
         result = json.loads(resp.read().decode("utf-8"))
 
     # Extract text content from Claude's response
