@@ -433,7 +433,7 @@ export default function App() {
 }
 
 var styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: C.bg, maxWidth: 480, alignSelf: 'center', width: '100%' },
+  container: { flex: 1, backgroundColor: C.bg, maxWidth: 480, alignSelf: 'center', width: '100%', height: '100vh', overflow: 'hidden' },
   header: { paddingTop: Platform.OS === 'web' ? 16 : 56, paddingHorizontal: 20, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: C.border, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   logoIcon: { width: 28, height: 28, borderRadius: 14, backgroundColor: C.green2, justifyContent: 'center', alignItems: 'center' },
