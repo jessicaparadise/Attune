@@ -22,3 +22,8 @@ output "recommendations_table" {
   description = "DynamoDB recommendations table name"
   value       = aws_dynamodb_table.recommendations.name
 }
+
+output "website_url" {
+  description = "Attune landing page URL"
+  value       = "https://${aws_cloudfront_distribution.website.domain_name}"
+}
