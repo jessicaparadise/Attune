@@ -31,6 +31,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "oura_uploads" {
   rule {
     id     = "archive-old-uploads"
     status = "Enabled"
+    filter {}
 
     transition {
       days          = 90
