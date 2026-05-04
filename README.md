@@ -90,7 +90,3 @@ curl -X POST $(terraform output -raw api_url)/recommendations \
 6. Recommender calls Claude API with biometric data + science-backed prompt
 7. Claude returns personalized nutrition, workout, and recovery plans with DOI citations
 8. Recommendations displayed in app; user actions tracked for trend analysis
-
-## License
-
-MIT
