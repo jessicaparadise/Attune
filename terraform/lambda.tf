@@ -2,7 +2,11 @@ resource "aws_iam_role" "lambda_exec" {
   name = "${local.prefix}-lambda-exec"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{ Action = "sts:AssumeRole", Effect = "Allow", Principal = { Service = "lambda.amazonaws.com" } }]
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+    }]
   })
 }
 
@@ -12,11 +16,38 @@ resource "aws_iam_role_policy" "lambda_permissions" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      { Effect = "Allow", Action = ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"], Resource = "arn:aws:logs:*:*:*" },
-      { Effect = "Allow", Action = ["s3:GetObject","s3:PutObject"], Resource = "${aws_s3_bucket.oura_uploads.arn}/*" },
-      { Effect = "Allow", Action = ["dynamodb:PutItem","dynamodb:GetItem","dynamodb:Query","dynamodb:UpdateItem","dynamodb:BatchWriteItem"],
-        Resource = [aws_dynamodb_table.users.arn, aws_dynamodb_table.metrics.arn, "${aws_dynamodb_table.metrics.arn}/index/*", aws_dynamodb_table.recommendations.arn, "${aws_dynamodb_table.recommendations.arn}/index/*"] },
-      { Effect = "Allow", Action = ["ssm:GetParameter"], Resource = "arn:aws:ssm:${var.aws_region}:*:parameter${var.claude_api_key_ssm_param}" }
+      {
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject"]
+        Resource = "${aws_s3_bucket.oura_uploads.arn}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:UpdateItem",
+          "dynamodb:BatchWriteItem"
+        ]
+        Resource = [
+          aws_dynamodb_table.users.arn,
+          aws_dynamodb_table.metrics.arn,
+          "${aws_dynamodb_table.metrics.arn}/index/*",
+          aws_dynamodb_table.recommendations.arn,
+          "${aws_dynamodb_table.recommendations.arn}/index/*"
+        ]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["ssm:GetParameter"]
+        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter${var.claude_api_key_ssm_param}"
+      }
     ]
   })
 }
@@ -37,7 +68,13 @@ resource "aws_lambda_function" "parser" {
   timeout          = 60
   memory_size      = 256
   role             = aws_iam_role.lambda_exec.arn
-  environment { variables = { METRICS_TABLE = aws_dynamodb_table.metrics.name, ENVIRONMENT = var.environment } }
+
+  environment {
+    variables = {
+      METRICS_TABLE = aws_dynamodb_table.metrics.name
+      ENVIRONMENT   = var.environment
+    }
+  }
 }
 
 resource "aws_lambda_permission" "s3_invoke_parser" {
@@ -64,7 +101,15 @@ resource "aws_lambda_function" "recommender" {
   timeout          = 30
   memory_size      = 256
   role             = aws_iam_role.lambda_exec.arn
-  environment { variables = { METRICS_TABLE = aws_dynamodb_table.metrics.name, RECOMMENDATIONS_TABLE = aws_dynamodb_table.recommendations.name, CLAUDE_API_KEY_PARAM = var.claude_api_key_ssm_param, ENVIRONMENT = var.environment } }
+
+  environment {
+    variables = {
+      METRICS_TABLE         = aws_dynamodb_table.metrics.name
+      RECOMMENDATIONS_TABLE = aws_dynamodb_table.recommendations.name
+      CLAUDE_API_KEY_PARAM  = var.claude_api_key_ssm_param
+      ENVIRONMENT           = var.environment
+    }
+  }
 }
 
 # ─── Tracker ───
@@ -83,5 +128,12 @@ resource "aws_lambda_function" "tracker" {
   timeout          = 10
   memory_size      = 128
   role             = aws_iam_role.lambda_exec.arn
-  environment { variables = { RECOMMENDATIONS_TABLE = aws_dynamodb_table.recommendations.name, METRICS_TABLE = aws_dynamodb_table.metrics.name, ENVIRONMENT = var.environment } }
+
+  environment {
+    variables = {
+      RECOMMENDATIONS_TABLE = aws_dynamodb_table.recommendations.name
+      METRICS_TABLE         = aws_dynamodb_table.metrics.name
+      ENVIRONMENT           = var.environment
+    }
+  }
 }

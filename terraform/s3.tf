@@ -4,13 +4,17 @@ resource "aws_s3_bucket" "oura_uploads" {
 
 resource "aws_s3_bucket_versioning" "oura_uploads" {
   bucket = aws_s3_bucket.oura_uploads.id
-  versioning_configuration { status = "Enabled" }
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "oura_uploads" {
   bucket = aws_s3_bucket.oura_uploads.id
   rule {
-    apply_server_side_encryption_by_default { sse_algorithm = "AES256" }
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
@@ -27,8 +31,16 @@ resource "aws_s3_bucket_lifecycle_configuration" "oura_uploads" {
   rule {
     id     = "archive-old-uploads"
     status = "Enabled"
-    transition { days = 90;  storage_class = "STANDARD_IA" }
-    transition { days = 365; storage_class = "GLACIER" }
+
+    transition {
+      days          = 90
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 365
+      storage_class = "GLACIER"
+    }
   }
 }
 
