@@ -98,7 +98,7 @@ resource "aws_lambda_function" "recommender" {
   source_code_hash = data.archive_file.recommender.output_base64sha256
   handler          = "handler.lambda_handler"
   runtime          = "python3.12"
-  timeout          = 30
+  timeout          = 90
   memory_size      = 256
   role             = aws_iam_role.lambda_exec.arn
 
